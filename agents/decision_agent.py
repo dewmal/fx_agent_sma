@@ -1,8 +1,18 @@
 import asyncio
 
 from spade.agent import Agent
-from spade.behaviour import CyclicBehaviour
+from spade.behaviour import CyclicBehaviour, FSMBehaviour
 from spade.template import Template
+
+
+class HighAlertNewsRecBehaviour(CyclicBehaviour):
+
+    async def run(self):
+        msg = await self.receive(timeout=1)
+        if msg:
+            print("Do not attend for any transaction")
+
+        await asyncio.sleep(delay=1)
 
 
 class DecisionAgentBehaviour(CyclicBehaviour):
@@ -23,7 +33,7 @@ class DecisionAgentBehaviour(CyclicBehaviour):
             else:
                 print("Do nothing...")
 
-        await asyncio.sleep(delay=5)
+        await asyncio.sleep(delay=1)
 
 
 class DecisionAgent(Agent):
@@ -32,4 +42,9 @@ class DecisionAgent(Agent):
         tmp = Template()
         tmp.set_metadata("stream", "ta_result")
         ba = DecisionAgentBehaviour()
+        self.add_behaviour(ba, template=tmp)
+
+        tmp = Template()
+        tmp.set_metadata("stream", "high_alert_result")
+        ba = HighAlertNewsRecBehaviour()
         self.add_behaviour(ba, template=tmp)

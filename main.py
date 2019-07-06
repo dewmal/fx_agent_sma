@@ -10,6 +10,11 @@ print(users['coordinator']['username'])
 
 if __name__ == "__main__":
 
+    fa_di_agent = CoordinatorAgent(get_xmpp_username(users['decision']['username']),
+                                   users['decision']['password'])
+    fa_di_agent.start()
+    fa_di_agent.web.start(hostname="127.0.0.1", port=users['decision']['port'])
+
     fa_co_agent = CoordinatorAgent(get_xmpp_username(users['coordinator']['username']),
                                    users['coordinator']['password'])
     fa_co_agent.start()
