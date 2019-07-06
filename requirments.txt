@@ -1,1 +1,4 @@
 spade
+websockets
+numpy
+pandas
