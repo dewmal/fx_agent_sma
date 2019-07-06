@@ -3,6 +3,7 @@ import time
 from agents.coordinator_agent import CoordinatorAgent
 from agents.decision_agent import DecisionAgent
 from agents.fundamental_agent import FundamentalAnalysingAgent
+from agents.publisher_agent import PublisherAgent
 from agents.technical_agent import TechnicalAnalysingAgent
 from agents.trading_stream_agent import TradingStreamAgent
 from settings import *
@@ -10,6 +11,11 @@ from settings import *
 if __name__ == "__main__":
 
     agents = []
+
+    fa_pb_agent = PublisherAgent(get_xmpp_username(
+        users['publisher']['username']),
+        users['publisher']['password'])
+    agents.append([fa_pb_agent, users['publisher']['port']])
 
     fa_di_agent = DecisionAgent(get_xmpp_username(
         users['decision']['username']),

@@ -4,3 +4,4 @@ numpy
 pandas
 pymongo
 rxpy
+python-socketio

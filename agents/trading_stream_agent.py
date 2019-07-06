@@ -13,6 +13,15 @@ from settings import get_xmpp_username, users
 
 class TradingStreamReceivingAgent(OneShotBehaviour):
 
+    async def notify_publisher(self, fx_tick_id):
+        to_sender = get_xmpp_username(users['publisher']['username'])  # Instantiate the message
+        msg = Message(to=to_sender)  # Instantiate the message
+        msg.set_metadata("stream", "publish_stream")  # Instantiate the message
+        msg.set_metadata("fx_tick_id", f"{fx_tick_id}")  # Instantiate the message
+        msg.body = "Tick Data"  # Set the message content
+
+        await  self.send(msg)
+
     async def notify_coordinator(self, fx_tick_id):
         to_sender = get_xmpp_username(users['coordinator']['username'])  # Instantiate the message
         msg = Message(to=to_sender)  # Instantiate the message
@@ -39,6 +48,7 @@ class TradingStreamReceivingAgent(OneShotBehaviour):
                 async def tick_value(fx_tick):
                     res_id = await fx_db.insert_fx_tick(fx_tick)
                     await tick_stream.notify_coordinator(res_id)
+                    await tick_stream.notify_publisher(res_id)
 
                 await process_message(message, _callback_fn=tick_value)
 
