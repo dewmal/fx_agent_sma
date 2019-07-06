@@ -12,7 +12,7 @@ if __name__ == "__main__":
     fa_agent.web.start(hostname="127.0.0.1", port=users['fundamental']['port'])
 
     fa_trading_stream_agent = TradingStreamAgent(get_xmpp_username(users['stream_agent']['username']),
-                                                 users['stream_agent']['password'])
+                                                 users['stream_agent']['password'], stock_indexes=stock_indexes)
 
     fa_trading_stream_agent.start()
     fa_trading_stream_agent.web.start(hostname="127.0.0.1", port=users['stream_agent']['port'])

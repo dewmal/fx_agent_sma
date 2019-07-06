@@ -12,3 +12,12 @@ class TickStream:
         self.pair = pair
         self.quote = quote
         self.timestamp = timestamp
+
+    def as_dict(self):
+        return {
+            "pair": self.pair,
+            "ask": self.ask,
+            "bid": self.bid,
+            "quote": self.quote,
+            "timestamp": self.timestamp,
+        }

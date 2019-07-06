@@ -2,3 +2,4 @@ spade
 websockets
 numpy
 pandas
+pymongo

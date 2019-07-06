@@ -1,5 +1,12 @@
 xmpp_host = "127.0.0.1"
 
+stock_indexes = [
+    "R_100",
+    "R_75",
+    "R_50",
+    "R_25"
+]
+
 users = {
     "oracle": {
         "name": "oracle",

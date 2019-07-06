@@ -6,6 +6,7 @@ from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour
 
 from api.binary_com_api import process_message
+from app import fx_db
 
 
 class TradingStreamReceivingAgent(OneShotBehaviour):
@@ -24,7 +25,8 @@ class TradingStreamReceivingAgent(OneShotBehaviour):
 
             async for message in websocket:
                 async def tick_value(fx_tick):
-                    print(fx_tick)
+                    res_id = await fx_db.insert_fx_tick(fx_tick)
+                    print(res_id)
 
                 # print(message)
                 await process_message(message, _callback_fn=tick_value)
@@ -34,10 +36,15 @@ class TradingStreamReceivingAgent(OneShotBehaviour):
 
 
 class TradingStreamAgent(Agent):
+
+    def __init__(self, jid, password, verify_security=False, stock_indexes=[]):
+        super().__init__(jid, password, verify_security)
+        self.stock_indexes = stock_indexes
+
     async def setup(self):
         print("start trading stream agent")
-        b = TradingStreamReceivingAgent(pair_name="R_100")
-        self.add_behaviour(b)
 
-        b = TradingStreamReceivingAgent(pair_name="R_50")
-        self.add_behaviour(b)
+        for index_val in self.stock_indexes:
+            print(index_val)
+            b = TradingStreamReceivingAgent(pair_name=f"{index_val}")
+            self.add_behaviour(b)
