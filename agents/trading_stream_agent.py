@@ -14,10 +14,14 @@ from settings import get_xmpp_username, users
 class TradingStreamReceivingAgent(OneShotBehaviour):
 
     async def notify_publisher(self, fx_tick_id):
+        fx_tick = await fx_db.get_fx_tick(fx_tick_id)
+        # print(fx_tick)
+
         to_sender = get_xmpp_username(users['publisher']['username'])  # Instantiate the message
         msg = Message(to=to_sender)  # Instantiate the message
         msg.set_metadata("stream", "publish_stream")  # Instantiate the message
-        msg.set_metadata("fx_tick_id", f"{fx_tick_id}")  # Instantiate the message
+        msg.set_metadata("data_name", "tick")  # Instantiate the message
+        msg.set_metadata("data_value", json.dumps(fx_tick.as_dict()))  # Instantiate the message
         msg.body = "Tick Data"  # Set the message content
 
         await  self.send(msg)

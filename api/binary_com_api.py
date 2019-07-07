@@ -26,8 +26,8 @@ async def process_message(message, _callback_fn):
             # print(pair_name,date,data)
             # await context.publish(index=date, data=data)
 
-            tick_val = TickStream(pair=symbol, ask=ask, bid=bid, quote=quote,
-                                  timestamp=date)
+            tick_val = TickStream(tickId=_id, symbol=symbol, ask=ask, bid=bid, quote=quote,
+                                  epoch=date)
             await _callback_fn(tick_val)
 
         elif message_type == 'proposal':

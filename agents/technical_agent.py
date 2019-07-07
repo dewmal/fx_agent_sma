@@ -1,15 +1,11 @@
 import asyncio
 from queue import Queue
 
-import numpy as np
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
-from spade.message import Message
 from spade.template import Template
 
 from app import fx_db
-from settings import get_xmpp_username, users
-from ta_lib.ta_rules import ta_rule_ge_value
 
 
 class FxTechnicalBehaviour(CyclicBehaviour):
@@ -23,7 +19,7 @@ class FxTechnicalBehaviour(CyclicBehaviour):
             # print(tick_id)
             fx_tick = await fx_db.get_fx_tick(tick_id)
 
-            print(fx_tick)
+            # print(fx_tick)
 
         await asyncio.sleep(delay=1)
 
