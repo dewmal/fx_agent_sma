@@ -3,5 +3,5 @@ websockets
 numpy
 pandas
 pymongo
-rxpy
+rx==3.0.0b5
 python-socketio

@@ -12,10 +12,11 @@ class PublisherBehaviour(OneShotBehaviour):
         while True:
             msg = await self.receive(timeout=1)
             if msg:
-                print(path)
-                data_value = msg.get_metadata("data_value")
-                print(data_value)
-                await websocket.send(data_value)
+                data_key = msg.get_metadata("data_key")
+                print(data_key, path, data_key == path)
+                if f"/{data_key}" == path:
+                    data_value = msg.get_metadata("data_value")
+                    await websocket.send(data_value)
             await asyncio.sleep(delay=1)
 
     def __init__(self):

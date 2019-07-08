@@ -1,7 +1,11 @@
+import asyncio
 import json
 import sys
 import traceback
+import rx
+from rx import operators as ops
 
+import settings
 from data.data_models import TickStream
 
 
@@ -23,12 +27,13 @@ async def process_message(message, _callback_fn):
             bid = float(fact['tick']['bid'])
             quote = float(fact['tick']['quote'])
             symbol = str(fact['tick']['symbol'])
-            # print(pair_name,date,data)
-            # await context.publish(index=date, data=data)
 
-            tick_val = TickStream(tickId=_id, symbol=symbol, ask=ask, bid=bid, quote=quote,
-                                  epoch=date)
-            await _callback_fn(tick_val)
+            for stock_index in settings.stock_indexes:
+                if stock_index['api_name'] == symbol:
+                    tick = TickStream(tickId=_id, symbol=stock_index['symbol'], ask=ask, bid=bid, quote=quote,
+                                      epoch=date)
+                    await _callback_fn(tick)
+                    break
 
         elif message_type == 'proposal':
             # self.buy_contact(ws, fact)

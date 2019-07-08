@@ -1,14 +1,33 @@
 xmpp_host = "127.0.0.1"
 
 stock_indexes = [
-    "R_25"
+    {
+        "name": "EUR_USD",
+        "api_name": "frxEURUSD",
+        "symbol": "EURUSD"
+    },
+    {
+        "name": "USD_JPY",
+        "api_name": "frxUSDJPY",
+        "symbol": "USDJPY"
+    },
+    {
+        "name": "AUD_JPY",
+        "api_name": "frxAUDJPY",
+        "symbol": "AUDJPY"
+    },
+    {
+        "name": "EUR_CAD",
+        "api_name": "frxEURCAD",
+        "symbol": "EURCAD"
+    }
 ]
 
 users = {
     "oracle": {
         "name": "oracle",
         "description": "History recode manager stock market",
-        "username": "oracle",
+        "username": "orcale",
         "password": "123456",
         "port": "50001"
 

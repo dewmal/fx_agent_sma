@@ -20,7 +20,7 @@ class TradingStreamReceivingAgent(OneShotBehaviour):
         to_sender = get_xmpp_username(users['publisher']['username'])  # Instantiate the message
         msg = Message(to=to_sender)  # Instantiate the message
         msg.set_metadata("stream", "publish_stream")  # Instantiate the message
-        msg.set_metadata("data_name", "tick")  # Instantiate the message
+        msg.set_metadata("data_key", f"tick/{fx_tick.symbol}")  # Instantiate the message
         msg.set_metadata("data_value", json.dumps(fx_tick.as_dict()))  # Instantiate the message
         msg.body = "Tick Data"  # Set the message content
 
@@ -71,5 +71,5 @@ class TradingStreamAgent(Agent):
 
         for index_val in self.stock_indexes:
             print(index_val)
-            b = TradingStreamReceivingAgent(pair_name=f"{index_val}")
+            b = TradingStreamReceivingAgent(pair_name=f"{index_val['api_name']}")
             self.add_behaviour(b)
