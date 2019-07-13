@@ -28,6 +28,13 @@ def get_template(agent: AgentType):
     return temp
 
 
+def get_message_type(msg: Message):
+    sender_name = msg.get_metadata("sender")
+    for agent_type in AgentType:
+        if agent_type.value == sender_name:
+            return agent_type
+
+
 class AbsMessageBuilder(ABC):
 
     @property
@@ -47,14 +54,21 @@ class AbsMessageBuilder(ABC):
     @abstractmethod
     def stream_name(self, name) -> None: pass
 
+    @abstractmethod
+    def sender_name(self, name) -> None: pass
+
 
 class MessageBuilder(AbsMessageBuilder):
+
+    def sender_name(self, name) -> None:
+        return self.meta_data("sender", name)
 
     @property
     def message(self):
         return self.__message
 
-    def to(self, to):
+    def to(self, to_agent):
+        to = to_agent.value
         if to in users:
             to = users[to]
             self.__message.to = get_xmpp_username(to['username'])
@@ -72,7 +86,10 @@ class MessageBuilder(AbsMessageBuilder):
         self.__message.body = body
         return self
 
-    def __init__(self, to_agent: AgentType = AgentType.COORDINATOR) -> None:
+    def __init__(self, sender_agent: AgentType, to_agent: AgentType = AgentType.COORDINATOR) -> None:
         self.__message = Message()
         self.stream_name(to_agent.value)
-        self.to(to_agent.value)
+        self.to(to_agent)
+
+        self.sender_name(sender_agent.value)
+        # self.sender(sender_agent)

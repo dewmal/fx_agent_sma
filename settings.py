@@ -81,14 +81,14 @@ users = {
         "description": "Publish all analysing data to portal",
         "username": "publisher",
         "password": "123456",
-        "port": "50006"
+        "port": "50007"
     },
     "stream_agent": {
         "name": "stream_agent",
         "description": "Publish all analysing data to portal",
         "username": "stream_agent",
         "password": "123456",
-        "port": "50007"
+        "port": "50008"
     }
 }
 

@@ -6,6 +6,7 @@ from spade.behaviour import CyclicBehaviour
 from spade.template import Template
 
 from app import fx_db
+from communicate.message import get_template, AgentType
 
 
 class FxTechnicalBehaviour(CyclicBehaviour):
@@ -14,7 +15,7 @@ class FxTechnicalBehaviour(CyclicBehaviour):
     async def run(self):
         msg = await self.receive(timeout=1)
         if msg:
-            # print(msg)
+            print(msg)
             tick_id = msg.get_metadata("fx_tick_id")
             # print(tick_id)
             fx_tick = await fx_db.get_fx_tick(tick_id)
@@ -31,7 +32,6 @@ class TechnicalAnalysingAgent(Agent):
         print("TA Agent Start")
 
     async def setup(self):
-        temp = Template()
-        temp.set_metadata("stream", "technical_tick")
+        template = get_template(AgentType.TECHNICAL)
         b = FxTechnicalBehaviour()
-        self.add_behaviour(b, template=temp)
+        self.add_behaviour(b, template=template)

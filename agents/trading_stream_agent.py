@@ -8,15 +8,16 @@ from spade.behaviour import OneShotBehaviour
 import settings
 from api.binary_com_api import process_message
 from app import fx_db
-from communicate.message import MessageBuilder
+from communicate.message import MessageBuilder, AgentType
 
 
 class TradingStreamReceivingAgent(OneShotBehaviour):
 
     async def notify_coordinator(self, fx_tick_id):
-        msg = MessageBuilder()\
-            .meta_data("fx_tick_id", f"{fx_tick_id}")\
-            .body("FX_TICK")\
+        msg = MessageBuilder(sender_agent=AgentType.STREAM_AGENT,
+                             to_agent=AgentType.COORDINATOR) \
+            .meta_data("fx_tick_id", f"{fx_tick_id}") \
+            .body("FX_TICK") \
             .message
         await  self.send(msg)
 
