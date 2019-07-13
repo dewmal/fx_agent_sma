@@ -1,9 +1,6 @@
-import asyncio
 import json
 import sys
 import traceback
-import rx
-from rx import operators as ops
 
 import settings
 from data.data_models import TickStream
