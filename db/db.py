@@ -14,7 +14,7 @@ class FxDataBase:
         result = fx_ticks.insert_one(fx_tick.as_dict())
         return result.inserted_id
 
-    async def get_fx_tick(self, fx_tick_id):
+    def get_fx_tick(self, fx_tick_id):
         fx_ticks = db.fx_ticks
         # print(fx_tick_id)
         fx_tick_id = ObjectId(fx_tick_id)
