@@ -1,47 +1,20 @@
 import asyncio
-import sys
-import traceback
 from queue import Queue
 
-import rx
-from rx import operators as ops
-from rx.subject import Subject
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour
 
 from app import fx_db
 from communicate.message import get_template, AgentType
-from data.data_models import TickWindow
-
-
-def create_window(tick_list):
-    return TickWindow.from_tick_list(tick_list)
+from ta_lib.ta_analyser import TAnalyser
 
 
 class FxTechnicalBehaviour(CyclicBehaviour):
-    window_que = Queue(maxsize=10)
 
-    tick_subscriber = rx.subject.Subject()
+    tick_analyser = TAnalyser(15)
 
     def __init__(self):
         super().__init__()
-        try:
-
-            self.tick_subscriber.pipe(
-                ops.map(lambda fx_id: fx_db.get_fx_tick(fx_id)),
-                ops.buffer_with_time(60),
-                ops.map(create_window),
-                ops.filter(lambda w: w is not None)
-            ).subscribe(
-                on_next=lambda op: print(op),
-                on_error=lambda e: print(e),
-                on_completed=lambda: print("on_completed")
-            )
-
-        except Exception:
-            print(traceback.format_exc())
-            # or
-            print(sys.exc_info()[0])
 
     async def run(self):
         msg = await self.receive(timeout=1)
@@ -49,8 +22,8 @@ class FxTechnicalBehaviour(CyclicBehaviour):
             # print(msg)
 
             tick_id = msg.get_metadata("fx_tick_id")
-
-            self.tick_subscriber.on_next(tick_id)
+            tick = await fx_db.get_fx_tick(tick_id)
+            self.tick_analyser.on_next(tick)
 
             # print(fx_tick)
 
