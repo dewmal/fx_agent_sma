@@ -2,35 +2,35 @@ xmpp_host = "127.0.0.1"
 app_id = 1089
 binary_api_end_point = f'wss://ws.binaryws.com/websockets/v3?app_id={app_id}'
 
-stock_indexes = [
-    {
-        "name": "EUR_USD",
-        "api_name": "R_50",
-        "symbol": "EURUSD"
-    }
-]
 # stock_indexes = [
 #     {
 #         "name": "EUR_USD",
-#         "api_name": "frxEURUSD",
+#         "api_name": "R_50",
 #         "symbol": "EURUSD"
-#     },
-#     {
-#         "name": "USD_JPY",
-#         "api_name": "frxUSDJPY",
-#         "symbol": "USDJPY"
-#     },
-#     {
-#         "name": "AUD_JPY",
-#         "api_name": "frxAUDJPY",
-#         "symbol": "AUDJPY"
-#     },
-#     {
-#         "name": "EUR_CAD",
-#         "api_name": "frxEURCAD",
-#         "symbol": "EURCAD"
 #     }
 # ]
+stock_indexes = [
+    {
+        "name": "EUR_USD",
+        "api_name": "frxEURUSD",
+        "symbol": "EURUSD"
+    },
+    {
+        "name": "USD_JPY",
+        "api_name": "frxUSDJPY",
+        "symbol": "USDJPY"
+    },
+    {
+        "name": "AUD_JPY",
+        "api_name": "frxAUDJPY",
+        "symbol": "AUDJPY"
+    },
+    {
+        "name": "EUR_CAD",
+        "api_name": "frxEURCAD",
+        "symbol": "EURCAD"
+    }
+]
 
 users = {
     "oracle": {

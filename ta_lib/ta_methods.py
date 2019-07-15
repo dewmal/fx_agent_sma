@@ -7,7 +7,6 @@ import numpy as np
 # Simple Moving Average
 # a is an array of prices, b is a period for averaging
 def sma(a, b):
-
     result = np.zeros(len(a) - b + 1)
     for i in range(len(a) - b + 1):
         result[i] = np.sum(a[i:i + b]) / b

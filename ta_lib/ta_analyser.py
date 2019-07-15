@@ -11,7 +11,7 @@ from rx.disposable import Disposable
 from rx.subject import Subject
 
 from data.data_models import TickWindow, TIData
-from ta_lib.ta_methods import sma
+from ta_lib.ta_methods import sma, rsi, ema
 
 
 def _time_windowing(time):
@@ -97,42 +97,88 @@ def _windowing(window_length, skip=1):
     return map
 
 
-def create_stream_ta(window_size):
+def test(a):
+    def print_a(b):
+        # print(f"--{a}--")
+        # print(b)
+        # print("-----")
+        return b
+
+    return print_a
+
+
+def to_array(wlist):
+    try:
+        print(wlist)
+        return np.array(wlist)
+    except Exception as err:
+        print(err)
+    return None
+
+
+def create_stream_ta(candle_time):
     tick_stream_subject = rx.subject.Subject()
     tick_stream_obs = tick_stream_subject.pipe(
-        _time_windowing(window_size),
+        _time_windowing(candle_time),
         ops.filter(lambda list: list),
         ops.map(lambda tick_list: TickWindow.from_tick_list(tick_list)),
-        ops.filter(lambda w: w is not None),
-        ops.map(lambda window: [window.epoch, window.close]),
-        _windowing(20),
-        ops.filter(lambda w: w is not None),
-        ops.map(lambda wlist: np.array(wlist))
+        ops.filter(lambda w: w),
+        ops.map(lambda window: [window.epoch, window.close, window.symbol]),
+        _windowing(100),
+        ops.map(test(1)),
+        ops.filter(lambda w: w),
+        ops.map(test(2)),
+        ops.map(to_array),
+        ops.map(test(3)),
     )
     return tick_stream_subject, tick_stream_obs
+
+
+def get_symbol(wlist):
+    return wlist[:1, 2][0]
 
 
 class TAnalyser:
     ta_subscribers = []
 
-    def __init__(self, symbol, window_size):
-        sma_5_sub, sma_5_obs = create_stream_ta(window_size=2)
-        sma_5_obs = sma_5_obs.pipe(
-            ops.map(lambda wlist: TIData(name="SMA", time_interval=5, epoch=wlist[:1, 0], data=sma(wlist[:, 1], 5),
-                                         symbol=symbol))
-        )
-        self.ta_subscribers.append(sma_5_sub)
+    def __init__(self, candle_time):
+        try:
+            sma_5_sub, sma_5_obs = create_stream_ta(candle_time=candle_time)
+            sma_5_obs = sma_5_obs.pipe(
+                ops.map(lambda wlist: TIData(name="SMA", time_interval=5, epoch=wlist[:1, 0][0],
+                                             data=sma(np.array(wlist[:, 1]).astype(np.float), 5),
+                                             symbol=get_symbol(wlist))),
 
-        sma_14_sub, sma_14_obs = create_stream_ta(window_size=2)
-        sma_14_obs = sma_14_obs.pipe(
-            ops.map(
-                lambda wlist: TIData(name="SMA", time_interval=14, epoch=wlist[:1, 0], data=sma(wlist[:, 1], 14),
-                                     symbol=symbol))
-        )
-        self.ta_subscribers.append(sma_14_sub)
-        #
-        sma_5_obs.subscribe_(on_next=lambda p: print(f"5 {p}"))
-        sma_14_obs.subscribe_(on_next=lambda p: print(f"14 {p}"))
+                # ops.map(test(4))
+            )
+            self.ta_subscribers.append(sma_5_sub)
+
+            ema_14_sub, ema_14_obs = create_stream_ta(candle_time=candle_time)
+            ema_14_obs = ema_14_obs.pipe(
+                ops.map(
+                    lambda wlist: TIData(name="EMA", time_interval=14, epoch=wlist[:1, 0],
+                                         data=sma(np.array(wlist[:, 1]).astype(np.float), 14),
+                                         symbol=get_symbol(wlist))),
+
+                # ops.map(test(5))
+            )
+            self.ta_subscribers.append(ema_14_sub)
+            #
+
+            rsi_14_sub, rsi_14_obs = create_stream_ta(candle_time=candle_time)
+            rsi_14_obs = rsi_14_obs.pipe(
+                ops.map(
+                    lambda wlist: TIData(name="RSI", time_interval=7, epoch=wlist[:1, 0],
+                                         data=rsi(np.array(wlist[:, 1]).astype(np.float), 7),
+                                         symbol=get_symbol(wlist))),
+
+                # ops.map(test(6))
+            )
+            self.ta_subscribers.append(rsi_14_sub)
+
+            self.ta_result = rx.merge(sma_5_obs, ema_14_obs, rsi_14_obs)
+        except Exception as err:
+            print(err)
 
     def on_next(self, tick):
         # rx.from_iterable(self.ta_subscribers).subscribe_(on_next=lambda s: s.on_next(tick))
