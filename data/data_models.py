@@ -70,8 +70,6 @@ class TickWindow:
             high_tick = max(tick_list, key=lambda tick: tick.value)
             low_tick = min(tick_list, key=lambda tick: tick.value)
             close_tick = tick_list[-1]
-            print(datetime.now())
-            print(datetime.fromtimestamp(open_tick.epoch), datetime.fromtimestamp(close_tick.epoch))
             return TickWindow(open_tick.value, high_tick.value, low_tick.value, close_tick.value, open_tick.epoch,
                               open_tick.symbol,
                               tick_list)
@@ -80,3 +78,17 @@ class TickWindow:
 
     def __str__(self) -> str:
         return f"{self.symbol} OLHC - {self.open},{self.high},{self.low},{self.close},{self.epoch}"
+
+
+class TIData:
+
+    def __init__(self, name, time_interval, epoch, data, symbol) -> None:
+        super().__init__()
+        self.time_interval = time_interval
+        self.symbol = symbol
+        self.data = data
+        self.epoch = epoch
+        self.name = name
+
+    def __str__(self):
+        return f"{self.name}-{self.time_interval},{self.data},{self.epoch},{self.symbol}"

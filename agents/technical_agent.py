@@ -10,8 +10,7 @@ from ta_lib.ta_analyser import TAnalyser
 
 
 class FxTechnicalBehaviour(CyclicBehaviour):
-
-    tick_analyser = TAnalyser(15)
+    tick_analyser = TAnalyser("EURUSD", 15)
 
     def __init__(self):
         super().__init__()

@@ -13,6 +13,7 @@ class CoordinatorTickStreamReadingBehavior(CyclicBehaviour):
     async def run(self):
         msg = await self.receive(timeout=1)
         if msg:
+            # print(msg)
             agent_type = get_message_type(msg)
             if agent_type == AgentType.STREAM_AGENT:
                 ta_msg = MessageBuilder(sender_agent=AgentType.COORDINATOR, to_agent=AgentType.TECHNICAL) \

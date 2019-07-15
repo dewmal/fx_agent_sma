@@ -5,3 +5,5 @@ pandas
 pymongo
 rx==3.0.0b5
 python-socketio
+durable_rules
+pandas
