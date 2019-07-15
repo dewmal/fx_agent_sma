@@ -30,7 +30,8 @@ if __name__ == "__main__":
 
     fa_ta_agent = TechnicalAnalysingAgent(get_xmpp_username(
         users['technical']['username']),
-        users['technical']['password'])
+        users['technical']['password'],
+        stock_indexes=stock_indexes)
     agents.append([fa_ta_agent, users['technical']['port']])
 
     fa_agent = FundamentalAnalysingAgent(get_xmpp_username(

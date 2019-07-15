@@ -102,6 +102,6 @@ class TradingStreamAgent(Agent):
 
         for index_val in self.stock_indexes:
             print(index_val)
-            # b = TradingStreamReceivingAgent(pair_name=f"{index_val['api_name']}")
-            b = TradingRecodedStreamReceivingAgent(pair_name=f"{index_val['api_name']}")
+            b = TradingStreamReceivingAgent(pair_name=f"{index_val['api_name']}")
+            # b = TradingRecodedStreamReceivingAgent(pair_name=f"{index_val['api_name']}")
             self.add_behaviour(b)

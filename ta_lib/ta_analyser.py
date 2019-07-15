@@ -100,9 +100,9 @@ def _windowing(window_length, skip=1):
 
 def test(a):
     def print_a(b):
-        # print(f"--{a}--")
-        # print(b)
-        # print("-----")
+        print(f"--{a}--")
+        print(b)
+        print("-----")
         return b
 
     return print_a
@@ -121,11 +121,13 @@ def create_stream_ta(candle_time):
     tick_stream_obs = tick_stream_subject.pipe(
         _time_windowing(candle_time),
         ops.filter(lambda list: list),
+        ops.filter(lambda w: w),
         ops.map(lambda tick_list: TickWindow.from_tick_list(tick_list)),
         ops.filter(lambda w: w),
-        ops.map(lambda window: [window.epoch, window.close, window.symbol]),
-        _windowing(20),
+        ops.map(test(0)),
+        ops.map(lambda window: [window.epoch, window.close]),
         ops.map(test(1)),
+        _windowing(20),
         ops.filter(lambda w: w),
         ops.map(test(2)),
         ops.map(to_array),
@@ -141,13 +143,15 @@ def get_symbol(wlist):
 class TAnalyser:
     ta_subscribers = []
 
-    def __init__(self, candle_time):
+    def __init__(self, candle_time, symbol):
+        self.candle_time = candle_time
+        self.symbol = symbol
         try:
             sma_5_sub, sma_5_obs = create_stream_ta(candle_time=candle_time)
             sma_5_obs = sma_5_obs.pipe(
                 ops.map(lambda wlist: TIData(name="SMA", time_interval=5, epoch=wlist[:1, 0][0],
                                              data=sma(np.array(wlist[:, 1]).astype(np.float), 5),
-                                             symbol=get_symbol(wlist))),
+                                             symbol=self.symbol)),
 
                 # ops.map(test(4))
             )
@@ -158,7 +162,7 @@ class TAnalyser:
                 ops.map(
                     lambda wlist: TIData(name="EMA", time_interval=14, epoch=wlist[:1, 0][0],
                                          data=sma(np.array(wlist[:, 1]).astype(np.float), 14),
-                                         symbol=get_symbol(wlist))),
+                                         symbol=self.symbol)),
 
                 # ops.map(test(5))
             )
@@ -170,7 +174,7 @@ class TAnalyser:
                 ops.map(
                     lambda wlist: TIData(name="RSI", time_interval=7, epoch=wlist[:1, 0][0],
                                          data=rsi(np.array(wlist[:, 1]).astype(np.float), 7),
-                                         symbol=get_symbol(wlist))),
+                                         symbol=self.symbol)),
 
                 # ops.map(test(6))
             )
@@ -183,3 +187,6 @@ class TAnalyser:
     def on_next(self, tick):
         # rx.from_iterable(self.ta_subscribers).subscribe_(on_next=lambda s: s.on_next(tick))
         rx.from_iterable(self.ta_subscribers).subscribe_(on_next=lambda s: s.on_next(tick))
+
+    def __str__(self) -> str:
+        return f"{self.symbol}-{self.candle_time}"
