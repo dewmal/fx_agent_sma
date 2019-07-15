@@ -109,7 +109,6 @@ def test(a):
 
 def to_array(wlist):
     try:
-        print(wlist)
         return np.array(wlist)
     except Exception as err:
         print(err)
