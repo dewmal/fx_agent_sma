@@ -1,5 +1,4 @@
 import asyncio
-from queue import Queue
 
 from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour

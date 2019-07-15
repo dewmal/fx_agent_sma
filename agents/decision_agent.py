@@ -1,7 +1,7 @@
 import asyncio
 
 from spade.agent import Agent
-from spade.behaviour import CyclicBehaviour, FSMBehaviour
+from spade.behaviour import CyclicBehaviour
 from spade.template import Template
 
 from settings import sleep_delay
