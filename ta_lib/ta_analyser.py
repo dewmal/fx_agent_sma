@@ -12,6 +12,7 @@ from rx.subject import Subject
 
 from data.data_models import TickWindow, TIData
 from ta_lib.ta_methods import sma, rsi, ema
+from utils import round_seconds
 
 
 def _time_windowing(time):
@@ -30,11 +31,11 @@ def _time_windowing(time):
                     data_list.append(value)
                     result = None
 
-                    current_time = datetime.datetime.fromtimestamp(value.epoch)
+                    current_time = round_seconds(datetime.datetime.fromtimestamp(value.epoch))
                     # _, _, _, _, min_2, sec_2, _, _, _ = current_time.timetuple()
 
                     if vars['start_time'] is None:
-                        vars['start_time'] = datetime.datetime.fromtimestamp(value.epoch)
+                        vars['start_time'] = current_time
 
                     window_begin_time = vars['start_time']
                     # _, _, _, _, min_1, sec_1, _, _, _ = window_begin_time.timetuple()
@@ -123,7 +124,7 @@ def create_stream_ta(candle_time):
         ops.map(lambda tick_list: TickWindow.from_tick_list(tick_list)),
         ops.filter(lambda w: w),
         ops.map(lambda window: [window.epoch, window.close, window.symbol]),
-        _windowing(100),
+        _windowing(20),
         ops.map(test(1)),
         ops.filter(lambda w: w),
         ops.map(test(2)),
@@ -155,7 +156,7 @@ class TAnalyser:
             ema_14_sub, ema_14_obs = create_stream_ta(candle_time=candle_time)
             ema_14_obs = ema_14_obs.pipe(
                 ops.map(
-                    lambda wlist: TIData(name="EMA", time_interval=14, epoch=wlist[:1, 0],
+                    lambda wlist: TIData(name="EMA", time_interval=14, epoch=wlist[:1, 0][0],
                                          data=sma(np.array(wlist[:, 1]).astype(np.float), 14),
                                          symbol=get_symbol(wlist))),
 
@@ -167,7 +168,7 @@ class TAnalyser:
             rsi_14_sub, rsi_14_obs = create_stream_ta(candle_time=candle_time)
             rsi_14_obs = rsi_14_obs.pipe(
                 ops.map(
-                    lambda wlist: TIData(name="RSI", time_interval=7, epoch=wlist[:1, 0],
+                    lambda wlist: TIData(name="RSI", time_interval=7, epoch=wlist[:1, 0][0],
                                          data=rsi(np.array(wlist[:, 1]).astype(np.float), 7),
                                          symbol=get_symbol(wlist))),
 

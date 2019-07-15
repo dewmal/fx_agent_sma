@@ -1,3 +1,8 @@
+import datetime
+
+from utils import round_time
+
+
 class TickStream:
     symbol: str
     ask: float
@@ -67,7 +72,11 @@ class TickWindow:
             high_tick = max(tick_list, key=lambda tick: tick.value)
             low_tick = min(tick_list, key=lambda tick: tick.value)
             close_tick = tick_list[-1]
-            return TickWindow(open_tick.value, high_tick.value, low_tick.value, close_tick.value, open_tick.epoch,
+
+            from utils import round_seconds
+
+            return TickWindow(open_tick.value, high_tick.value, low_tick.value, close_tick.value,
+                              round_time(datetime.datetime.fromtimestamp(open_tick.epoch)).timestamp(),
                               open_tick.symbol,
                               tick_list)
         else:
