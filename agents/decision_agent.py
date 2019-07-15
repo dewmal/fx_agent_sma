@@ -4,6 +4,8 @@ from spade.agent import Agent
 from spade.behaviour import CyclicBehaviour, FSMBehaviour
 from spade.template import Template
 
+from settings import sleep_delay
+
 
 class HighAlertNewsRecBehaviour(CyclicBehaviour):
 
@@ -12,7 +14,7 @@ class HighAlertNewsRecBehaviour(CyclicBehaviour):
         if msg:
             print("Do not attend for any transaction")
 
-        await asyncio.sleep(delay=1)
+        await asyncio.sleep(delay=sleep_delay)
 
 
 class DecisionAgentBehaviour(CyclicBehaviour):
@@ -33,7 +35,7 @@ class DecisionAgentBehaviour(CyclicBehaviour):
             else:
                 print("Do nothing...")
 
-        await asyncio.sleep(delay=1)
+        await asyncio.sleep(delay=sleep_delay)
 
 
 class DecisionAgent(Agent):

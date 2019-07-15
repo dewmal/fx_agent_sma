@@ -5,6 +5,8 @@ from spade.agent import Agent
 from spade.behaviour import OneShotBehaviour
 from spade.template import Template
 
+from settings import sleep_delay
+
 
 class PublisherBehaviour(OneShotBehaviour):
 
@@ -17,7 +19,7 @@ class PublisherBehaviour(OneShotBehaviour):
                 if f"/{data_key}" == path:
                     data_value = msg.get_metadata("data_value")
                     await websocket.send(data_value)
-            await asyncio.sleep(delay=1)
+            await asyncio.sleep(delay=sleep_delay)
 
     def __init__(self):
         super().__init__()

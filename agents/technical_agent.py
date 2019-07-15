@@ -6,6 +6,7 @@ from spade.behaviour import CyclicBehaviour
 
 from app import fx_db
 from communicate.message import get_template, AgentType
+from settings import sleep_delay
 from ta_lib.ta_analyser import TAnalyser
 
 
@@ -26,7 +27,7 @@ class FxTechnicalBehaviour(CyclicBehaviour):
 
             # print(fx_tick)
 
-        await asyncio.sleep(delay=1)
+        await asyncio.sleep(delay=sleep_delay)
 
 
 class TechnicalAnalysingAgent(Agent):

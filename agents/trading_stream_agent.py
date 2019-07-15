@@ -80,7 +80,7 @@ class TradingRecodedStreamReceivingAgent(TradingStreamReadingBehaviour):
                                          epoch=epoch)
                     res_id = await fx_db.insert_fx_tick(fx_tick)
                     await self.notify_coordinator(res_id)
-                    await asyncio.sleep(delay=0.0001)
+                    await asyncio.sleep(delay=settings.sleep_delay)
 
         except Exception:
             print(traceback.format_exc())

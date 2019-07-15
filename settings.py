@@ -91,6 +91,7 @@ users = {
         "port": "50008"
     }
 }
+sleep_delay = 0.00001
 
 
 def get_xmpp_username(username):

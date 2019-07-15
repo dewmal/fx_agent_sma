@@ -5,7 +5,7 @@ from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 
 from communicate.message import MessageBuilder, AgentType, get_template, get_message_type
-from settings import get_xmpp_username, users
+from settings import get_xmpp_username, users, sleep_delay
 
 
 class CoordinatorTickStreamReadingBehavior(CyclicBehaviour):
@@ -30,7 +30,7 @@ class CoordinatorTickStreamReadingBehavior(CyclicBehaviour):
             #
             # await self.notify_pulathisi(msg.get_metadata("fx_tick_id"))
 
-        await asyncio.sleep(delay=1)
+        await asyncio.sleep(delay=sleep_delay)
 
 
 class CoordinatorAgent(Agent):
