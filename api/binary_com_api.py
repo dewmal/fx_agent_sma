@@ -1,3 +1,5 @@
+import asyncio
+import datetime
 import json
 import sys
 import traceback
@@ -32,22 +34,29 @@ async def process_message(message, _callback_fn):
                     await _callback_fn(tick)
                     break
 
-        elif message_type == 'proposal':
-            # self.buy_contact(ws, fact)
-            pass
-        elif message_type == 'authorize':
-            # self.is_logged_in = True
-            # self.account_balance = float(fact['authorize']['balance'])
-            pass
-        elif message_type == 'buy':
-            # self.account_balance = float(fact['buy']['balance_after'])
-            pass
-        elif message_type == 'sell':
-            # self.account_balance = float(fact['sell']['balance_after'])
-            pass
-        else:
-            # logging.info(fact)
-            pass
+        elif message_type == 'history':
+
+            symbol = fact["echo_req"]["ticks_history"]
+
+            for stock_index in settings.stock_indexes:
+                if stock_index['api_name'] == symbol:
+                    symbol = stock_index['symbol']
+                    break
+
+            prices = fact["history"]["prices"]
+            times = fact["history"]["times"]
+
+            for idx, time in enumerate(times):
+                price = prices[idx]
+                # print(time)
+                # print(datetime.datetime.fromtimestamp(time))
+
+                tick = TickStream(tickId=time, symbol=symbol, ask=price, bid=price, quote=price,
+                                  epoch=time)
+                await _callback_fn(tick)
+
+                await asyncio.sleep(delay=settings.sleep_delay)
+
 
     except Exception as e:
         ex, val, tb = sys.exc_info()

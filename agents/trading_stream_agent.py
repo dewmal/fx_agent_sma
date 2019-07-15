@@ -35,12 +35,24 @@ class TradingStreamReceivingAgent(TradingStreamReadingBehaviour):
     async def fx_tick_reader(self):
         async with websockets.connect(
                 f'{settings.binary_api_end_point}') as websocket:
-            json_data = json.dumps({'ticks': f'{self.pair_name}'})
+            json_data = json.dumps({
+                "ticks_history": f"{self.pair_name}",
+                "end": "latest",
+                "start": 1,
+                "style": "ticks",
+                "adjust_start_time": 1,
+                "count": 10000,
+                "subscribe": 1
+            })
             await websocket.send(json_data)
+
+            # json_data = json.dumps({'ticks': f'{self.pair_name}'})
+            # await websocket.send(json_data)
 
             tick_stream = self
             async for message in websocket:
                 async def tick_value(fx_tick):
+                    # print(fx_tick)
                     res_id = await fx_db.insert_fx_tick(fx_tick)
                     await tick_stream.notify_coordinator(res_id)
 

@@ -1,7 +1,7 @@
 xmpp_host = "127.0.0.1"
 app_id = 1089
 binary_api_end_point = f'wss://ws.binaryws.com/websockets/v3?app_id={app_id}'
-
+live = False
 # stock_indexes = [
 #     {
 #         "name": "EUR_USD",
@@ -100,3 +100,9 @@ def get_xmpp_username(username):
 
 def get_username(user):
     return get_xmpp_username(user['username'])
+
+
+def db_host():
+    if live:
+        return "165.22.50.158:17015"
+    return "localhost:27017"

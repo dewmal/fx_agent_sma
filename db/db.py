@@ -1,9 +1,11 @@
 from bson import ObjectId
 from pymongo import MongoClient
 
+import settings
 from data.data_models import TickStream
 
-client = MongoClient('mongodb://localhost:27017')
+client = MongoClient(f'mongodb://{settings.db_host()}')
+
 
 db = client.fx_mas_app
 

@@ -100,9 +100,9 @@ def _windowing(window_length, skip=1):
 
 def test(a):
     def print_a(b):
-        print(f"--{a}--")
-        print(b)
-        print("-----")
+        # print(f"--{a}--")
+        # print(b)
+        # print("-----")
         return b
 
     return print_a

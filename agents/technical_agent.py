@@ -17,7 +17,7 @@ class FxTechnicalBehaviour(CyclicBehaviour):
 
     def read_analysing_report(self, report: TIData):
         print("----")
-        print(report.epoch)
+        print(report.name, report.symbol, report.epoch)
         print("----")
 
     def __init__(self, stock_indexes):
