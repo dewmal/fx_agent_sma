@@ -42,7 +42,7 @@ class TradingStreamReceivingAgent(TradingStreamReadingBehaviour):
                 "start": 1,
                 "style": "candles",
                 "adjust_start_time": 1,
-                "count": 100,
+                "count": 50,
                 "subscribe": 1
             })
             await websocket.send(json_data)
@@ -54,15 +54,13 @@ class TradingStreamReceivingAgent(TradingStreamReadingBehaviour):
             async for message in websocket:
                 async def tick_value(fx_tick):
                     # print(fx_tick)
-                    res_id, res_type = None, None
-                    if isinstance(fx_tick, TickStream):
-                        res_id = await fx_db.insert_fx_tick(fx_tick)
-                        res_type = f'{TickStream.__type__}'
-                    elif isinstance(fx_tick, TickWindow):
+                    # res_id, res_type = None, None
+                    # if isinstance(fx_tick, TickStream):
+                    #     res_id = await fx_db.insert_fx_tick(fx_tick)
+                    #     res_type = f'{TickStream.__type__}'
+                    if isinstance(fx_tick, TickWindow):
                         res_id = await fx_db.insert_fx_window(fx_tick)
-                        res_type = f'{TickWindow.__type__}'
-
-                    if res_id:
+                        res_type = f'{TickWindow.__type__}'  # if res_id:
                         await tick_stream.notify_coordinator(res_id, res_type)
 
                 await process_message(message, _callback_fn=tick_value)

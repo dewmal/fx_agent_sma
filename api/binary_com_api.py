@@ -84,10 +84,10 @@ async def process_message(message, _callback_fn):
             await _callback_fn(t_window)
             await asyncio.sleep(delay=settings.sleep_delay)
 
-            tick = TickStream(tickId=last_epoch_time, symbol=get_symbol(symbol), ask=close, bid=close, quote=close,
-                              epoch=last_epoch_time)
-            await _callback_fn(tick)
-            await asyncio.sleep(delay=settings.sleep_delay)
+            # tick = TickStream(tickId=last_epoch_time, symbol=get_symbol(symbol), ask=close, bid=close, quote=close,
+            #                   epoch=last_epoch_time)
+            # await _callback_fn(tick)
+            # await asyncio.sleep(delay=settings.sleep_delay)
 
 
     except Exception as e:

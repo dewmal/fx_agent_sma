@@ -19,7 +19,7 @@ def _window_filter():
     data_list = []
 
     vars = {
-        "start_time": None
+        "start_time": -1
     }
 
     def map(source: Observable) -> Observable:
@@ -28,14 +28,14 @@ def _window_filter():
             def on_next(value: TickWindow) -> None:
                 try:
                     result = None
-                    if vars['start_time'] is None:
+                    # if vars['start_time'] is None:
+                    #     vars['start_time'] = value.epoch
+                    #
+                    if vars['start_time'] and vars['start_time'] != value.epoch:
+                        result = value
                         vars['start_time'] = value.epoch
-                    else:
-                        if vars['start_time'] == value.epoch:
-                            result = value
-                            vars['start_time'] = None
 
-                            # result = value
+                        # result = value
                 except Exception as err:  # pylint: disable=broad-except
                     obv.on_error(err)
                 else:
@@ -100,14 +100,15 @@ def to_array(wlist):
 def create_stream_ta(window_time):
     tick_stream_subject = rx.subject.Subject()
     tick_stream_obs = tick_stream_subject.pipe(
+        # ops.map(test(55)),
         _window_filter(),
         ops.filter(lambda w: w),
         ops.map(test(0)),
         ops.map(lambda window: [window.epoch, window.close]),
-        ops.map(test(1)),
+        # ops.map(test(1)),
         _windowing(window_time),
         ops.filter(lambda w: w),
-        ops.map(test(2)),
+        # ops.map(test(2)),
         ops.map(to_array),
         ops.map(test(3)),
     )

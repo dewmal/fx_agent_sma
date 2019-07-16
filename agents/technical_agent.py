@@ -40,6 +40,7 @@ class FxTechnicalWindowReadBehaviour(CyclicBehaviour):
     def read_analysing_report(self, report: TIData):
         print("--window--")
         print(report.name, report.symbol, report.epoch)
+        print(report.data)
         print("--window--")
 
 
@@ -82,10 +83,10 @@ class TechnicalAnalysingAgent(Agent):
         print("TA Agent Start")
 
     async def setup(self):
-        template = get_template(AgentType.TECHNICAL)
-        template.set_metadata("db_type", f"{TickStream.__type__}")
-        b = FxTechnicalTickReadBehaviour(self.stock_indexes)
-        self.add_behaviour(b, template=template)
+        # template = get_template(AgentType.TECHNICAL)
+        # template.set_metadata("db_type", f"{TickStream.__type__}")
+        # b = FxTechnicalTickReadBehaviour(self.stock_indexes)
+        # self.add_behaviour(b, template=template)
 
         template = get_template(AgentType.TECHNICAL)
         template.set_metadata("db_type", f"{TickWindow.__type__}")
