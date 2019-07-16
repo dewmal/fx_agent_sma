@@ -4,6 +4,7 @@ from utils import round_time
 
 
 class TickStream:
+    __type__ = "tick_stream"
     symbol: str
     ask: float
     bid: float
@@ -49,14 +50,18 @@ class TickStream:
 
 
 class TickWindow:
+    __type__ = "window_stream"
     open = 0
     high = 0
     low = 0
     close = 0
     epoch = 0
     symbol: str
+    last_epoch_time = 0
 
-    def __init__(self, open, high, low, close, epoch, symbol, tick_list=[]) -> None:
+    def __init__(self, open, high, low, close, epoch, symbol, last_epoch_time=0, tick_list=[], id=None) -> None:
+        self.id = id
+        self.last_epoch_time = last_epoch_time
         self.open = open
         self.high = high
         self.low = low
@@ -64,6 +69,31 @@ class TickWindow:
         self.epoch = epoch
         self.symbol = symbol
         self.tick_list = tick_list
+
+    def as_dict(self):
+        return {
+            "open": self.open,
+            "high": self.high,
+            "low": self.low,
+            "close": self.close,
+            "epoch": self.epoch,
+            "symbol": self.symbol,
+            "last_epoch_time": self.last_epoch_time,
+        }
+
+    @classmethod
+    def from_dict(cls, _data):
+        return TickWindow(
+            _data['open'],
+            _data['high'],
+            _data['low'],
+            _data['close'],
+            _data['epoch'],
+            _data['symbol'],
+            _data['last_epoch_time'],
+            [],
+            _data['_id'],
+        )
 
     @staticmethod
     def from_tick_list(tick_list: [TickStream]):
@@ -73,8 +103,6 @@ class TickWindow:
             low_tick = min(tick_list, key=lambda tick: tick.value)
             close_tick = tick_list[-1]
 
-            from utils import round_seconds
-
             return TickWindow(open_tick.value, high_tick.value, low_tick.value, close_tick.value,
                               round_time(datetime.datetime.fromtimestamp(open_tick.epoch)).timestamp(),
                               open_tick.symbol,
@@ -83,7 +111,7 @@ class TickWindow:
             return None
 
     def __str__(self) -> str:
-        return f"{self.symbol} OLHC - {self.open},{self.high},{self.low},{self.close},{self.epoch}"
+        return f"{self.symbol} OLHC - {self.open},{self.high},{self.low},{self.close},{self.epoch},{self.last_epoch_time},{self.id}"
 
 
 class TIData:

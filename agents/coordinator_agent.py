@@ -16,7 +16,9 @@ class CoordinatorTickStreamReadingBehavior(CyclicBehaviour):
             agent_type = get_message_type(msg)
             if agent_type == AgentType.STREAM_AGENT:
                 ta_msg = MessageBuilder(sender_agent=AgentType.COORDINATOR, to_agent=AgentType.TECHNICAL) \
-                    .meta_data("fx_tick_id", msg.get_metadata("fx_tick_id")).message
+                    .meta_data("db_id", msg.get_metadata("db_id"))\
+                    .meta_data("db_type", msg.get_metadata("db_type"))\
+                    .message
                 await self.send(ta_msg)
 
         await asyncio.sleep(delay=sleep_delay)

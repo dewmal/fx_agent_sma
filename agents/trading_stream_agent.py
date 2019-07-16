@@ -13,14 +13,15 @@ import settings
 from api.binary_com_api import process_message
 from app import fx_db
 from communicate.message import MessageBuilder, AgentType
-from data.data_models import TickStream
+from data.data_models import TickStream, TickWindow
 
 
 class TradingStreamReadingBehaviour(OneShotBehaviour, ABC):
-    async def notify_coordinator(self, fx_tick_id):
+    async def notify_coordinator(self, entity_id, entity_type):
         msg = MessageBuilder(sender_agent=AgentType.STREAM_AGENT,
                              to_agent=AgentType.COORDINATOR) \
-            .meta_data("fx_tick_id", f"{fx_tick_id}") \
+            .meta_data("db_type", f"{entity_type}") \
+            .meta_data("db_id", f"{entity_id}") \
             .body("FX_TICK") \
             .message
         await  self.send(msg)
@@ -39,9 +40,9 @@ class TradingStreamReceivingAgent(TradingStreamReadingBehaviour):
                 "ticks_history": f"{self.pair_name}",
                 "end": "latest",
                 "start": 1,
-                "style": "ticks",
+                "style": "candles",
                 "adjust_start_time": 1,
-                "count": 10000,
+                "count": 100,
                 "subscribe": 1
             })
             await websocket.send(json_data)
@@ -53,8 +54,16 @@ class TradingStreamReceivingAgent(TradingStreamReadingBehaviour):
             async for message in websocket:
                 async def tick_value(fx_tick):
                     # print(fx_tick)
-                    res_id = await fx_db.insert_fx_tick(fx_tick)
-                    await tick_stream.notify_coordinator(res_id)
+                    res_id, res_type = None, None
+                    if isinstance(fx_tick, TickStream):
+                        res_id = await fx_db.insert_fx_tick(fx_tick)
+                        res_type = f'{TickStream.__type__}'
+                    elif isinstance(fx_tick, TickWindow):
+                        res_id = await fx_db.insert_fx_window(fx_tick)
+                        res_type = f'{TickWindow.__type__}'
+
+                    if res_id:
+                        await tick_stream.notify_coordinator(res_id, res_type)
 
                 await process_message(message, _callback_fn=tick_value)
 

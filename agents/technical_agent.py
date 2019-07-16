@@ -7,12 +7,43 @@ from spade.behaviour import CyclicBehaviour
 
 from app import fx_db
 from communicate.message import get_template, AgentType
-from data.data_models import TIData
+from data.data_models import TIData, TickStream, TickWindow
 from settings import sleep_delay
 from ta_lib.ta_analyser import TAnalyser
+from ta_lib.ta_analyser_window import TAnalyserWidow
 
 
-class FxTechnicalBehaviour(CyclicBehaviour):
+class FxTechnicalWindowReadBehaviour(CyclicBehaviour):
+
+    def __init__(self, stock_indexes):
+        super().__init__()
+        self.stock_indexes = stock_indexes
+
+        for stock_index in stock_indexes:
+            tick_analyser = TAnalyserWidow(20, stock_index['symbol'])
+            tick_analyser.ta_result.subscribe_(self.read_analysing_report)
+            self.analysers.append(tick_analyser)
+            print(tick_analyser)
+
+    async def run(self):
+        msg = await self.receive(timeout=1)
+        if msg:
+            # print("Window Tick  Stream")
+            db_id = msg.get_metadata("db_id")
+            window = await fx_db.get_fx_window(db_id)
+            # print(window)
+            rx.from_iterable(self.analysers).pipe(ops.filter(lambda a: a.symbol == window.symbol)).subscribe_(
+                lambda tick_analyser: tick_analyser.on_next(window))
+
+    analysers = []
+
+    def read_analysing_report(self, report: TIData):
+        print("--window--")
+        print(report.name, report.symbol, report.epoch)
+        print("--window--")
+
+
+class FxTechnicalTickReadBehaviour(CyclicBehaviour):
     analysers = []
 
     def read_analysing_report(self, report: TIData):
@@ -52,6 +83,13 @@ class TechnicalAnalysingAgent(Agent):
 
     async def setup(self):
         template = get_template(AgentType.TECHNICAL)
-        b = FxTechnicalBehaviour(self.stock_indexes)
+        template.set_metadata("db_type", f"{TickStream.__type__}")
+        b = FxTechnicalTickReadBehaviour(self.stock_indexes)
         self.add_behaviour(b, template=template)
+
+        template = get_template(AgentType.TECHNICAL)
+        template.set_metadata("db_type", f"{TickWindow.__type__}")
+        b = FxTechnicalWindowReadBehaviour(self.stock_indexes)
+        self.add_behaviour(b, template=template)
+
         print("TA Agent setup done...")
