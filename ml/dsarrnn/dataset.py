@@ -3,11 +3,36 @@ import pandas as pd
 import math
 
 
+def create_data_frame(csv_name):
+    column_names = ["date", "time", "Open", "High", "Low", "Close", "Volume"]
+
+    data_frame = pd.read_csv(csv_name, names=column_names)
+    data_frame['Date'] = data_frame.date + ' ' + data_frame.time
+    data_frame.Date = pd.to_datetime(data_frame.Date, format="%Y.%m.%d %H:%M")
+
+    stock_frame = pd.DataFrame()
+
+    stock_frame['Date'] = data_frame.Date
+    stock_frame['Open'] = data_frame.Open
+    stock_frame['High'] = data_frame.High
+    stock_frame['Low'] = data_frame.Low
+    stock_frame['Close'] = data_frame.Close
+    stock_frame['Adj Close'] = data_frame.Close
+    stock_frame['Volume'] = data_frame.Volume
+
+    return stock_frame
+
+
 class Dataset:
 
     def __init__(self, driving_csv, target_csv, T, split_ratio=0.8, normalized=False):
-        stock_frame1 = pd.read_csv(driving_csv)
-        stock_frame2 = pd.read_csv(target_csv)
+
+        stock_frame1 = create_data_frame(driving_csv)
+        stock_frame2 = create_data_frame(target_csv)
+
+        print(stock_frame1.head())
+        print(stock_frame2.head())
+
         if stock_frame1.shape[0] > stock_frame2.shape[0]:
             stock_frame1 = self.crop_stock(stock_frame1, stock_frame2['Date'][0]).reset_index()
         else:
