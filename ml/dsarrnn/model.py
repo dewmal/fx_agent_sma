@@ -138,17 +138,24 @@ class decoder(nn.Module):
 
 # In[ ]:
 
+
 # Train the model
 class da_rnn:
-    def __init__(self, file_data, logger, encoder_hidden_size=64, decoder_hidden_size=64, T=10,
+    def __init__(self, X, Y, logger, encoder_hidden_size=64, decoder_hidden_size=64, T=10,
                  learning_rate=0.01, batch_size=128, parallel=True, debug=False):
         self.T = T
-        dat = pd.read_csv(file_data, nrows=100 if debug else None)
+        # dat = pd.read_csv(file_data, nrows=100 if debug else None)
         self.logger = logger
-        self.logger.info("Shape of data: %s.\nMissing in data: %s.", dat.shape, dat.isnull().sum().sum())
+        # self.logger.info("Shape of data: %s.\nMissing in data: %s.", dat.shape, dat.isnull().sum().sum())
 
-        self.X = dat.loc[:, [x for x in dat.columns.tolist() if x != 'NDX']].as_matrix()
-        self.y = np.array(dat.NDX)
+        # self.X = dat.loc[:, [x for x in dat.columns.tolist() if x != 'NDX']].as_matrix()
+        # self.y = np.array(dat.NDX)
+
+        self.X = X
+        self.y = Y
+
+        print(self.X.shape, self.y.shape)
+
         self.batch_size = batch_size
 
         self.encoder = encoder(input_size=self.X.shape[1], hidden_size=encoder_hidden_size, T=T,
@@ -223,7 +230,7 @@ class da_rnn:
 
             self.epoch_losses[i] = np.mean(self.iter_losses[range(i * iter_per_epoch, (i + 1) * iter_per_epoch)])
             if i % 10 == 0:
-                self.logger.info("Epoch %d, loss: %3.3f.", i, self.epoch_losses[i])
+                self.logger.info("Epoch %d, loss: %3.10f.", i, self.epoch_losses[i])
 
             if i % 10 == 0:
                 y_train_pred = self.predict(on_train=True)
