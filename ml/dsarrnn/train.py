@@ -46,7 +46,8 @@ def train(io_dir):
 
     target_data_frame = None
 
-    drive = ['EURAUD', 'EURCHF', 'EURGBP', 'EURJPY', 'USDCAD', 'USDCHF', 'USDJPY']
+    drive = ['EURAUD', 'EURCHF', 'EURGBP', 'EURJPY', 'USDCAD', 'USDCHF', 'USDJPY', 'CADCHF', 'EURCAD', 'EURNZD',
+             'GBPJPY', 'GBPUSD']
     target = 'EURUSD'
 
     for p in [*drive, target]:
@@ -71,12 +72,12 @@ def train(io_dir):
             d_date = dp.iloc[idx_saved, 0]
             if t_date >= d_date:
                 drive_data_settings[idx_d]['idx'] = idx_saved + 1
-                values.append(dp.iloc[idx_saved, 1])
-                values.append(dp.iloc[idx_saved, 2])
-                values.append(dp.iloc[idx_saved, 3])
+                # values.append(dp.iloc[idx_saved, 1])
+                # values.append(dp.iloc[idx_saved, 2])
+                # values.append(dp.iloc[idx_saved, 3])
                 values.append(dp.iloc[idx_saved, 4])
 
-        if len(values) == len(drive) * 4:
+        if len(values) == len(drive) :
             # values = np.array(values)
             X.append(values)
             Y.append(target_data_frame.iloc[idx, 4])
